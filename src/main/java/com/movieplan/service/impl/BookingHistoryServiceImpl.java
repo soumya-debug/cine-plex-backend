@@ -1,7 +1,8 @@
-package com.movieplan.service;
+package com.movieplan.service.impl;
 
 import java.util.List;
 
+import com.movieplan.service.BookingHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,9 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 
 	private final BookingHistoryRepository bookingHistoryRepository;
 	private final userRepository userRepository;
-	private final movieRepository movieRepository; // Assuming you have a MovieRepository
-	private final theaterRepository theaterRepository; // Assuming you have a TheaterRepository
-	private final CheckoutRepository checkoutRepository; // Assuming you have a CheckoutRepository
+	private final movieRepository movieRepository;
+	private final theaterRepository theaterRepository;
+	private final CheckoutRepository checkoutRepository;
 
 	@Autowired
 	public BookingHistoryServiceImpl(BookingHistoryRepository bookingHistoryRepository, userRepository userRepository,
@@ -75,9 +76,6 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 						+ dto.getCardHolderName() + " and card number: " + dto.getCardNumber()));
 		bookingHistory.setCheckout(checkout);
 
-		// Convert other fields
-		// ...
-
 		return bookingHistory;
 	}
 
@@ -89,8 +87,6 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 		dto.setMovie(bookingHistory.getMovie().getName());
 		dto.setTheater(bookingHistory.getTheater().getTheatreName());
 		dto.setId(bookingHistory.getCheckout().getId()); // Set checkout ID
-		// Convert other fields
-		// ...
 
 		return dto;
 	}
