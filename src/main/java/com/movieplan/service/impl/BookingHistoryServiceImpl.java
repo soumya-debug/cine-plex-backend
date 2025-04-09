@@ -89,5 +89,6 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 		dto.setId(bookingHistory.getCheckout().getId()); // Set checkout ID
 
 		return dto;
+
 	}
 }
