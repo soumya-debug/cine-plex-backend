@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.movieplan.service.PaymentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -32,7 +33,7 @@ class CheckoutControllerTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		checkoutController = new PaymentController(checkoutRepository);
+		checkoutController = new PaymentController((PaymentService) checkoutRepository);
 	}
 
 	@Test
@@ -53,7 +54,7 @@ class CheckoutControllerTest {
 		PaymentModel checkoutData = new PaymentModel();
 		when(checkoutRepository.save(checkoutData)).thenReturn(checkoutData);
 
-		PaymentModel result = checkoutController.processCheckout(checkoutData);
+		PaymentModel result = checkoutController.processCheckout(checkoutData).getBody();
 
 		assertEquals(checkoutData, result);
 		verify(checkoutRepository).save(checkoutData);

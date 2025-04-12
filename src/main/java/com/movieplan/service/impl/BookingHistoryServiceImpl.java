@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.movieplan.dto.BookingHistoryDTO;
-import com.movieplan.model.BookingHistory;
 import com.movieplan.model.PaymentModel;
 import com.movieplan.model.Movie;
 import com.movieplan.model.Theater;
 import com.movieplan.repository.BookingHistoryRepository;
 import com.movieplan.repository.CheckoutRepository;
-import com.movieplan.repository.movieRepository;
+import com.movieplan.repository.MovieRepository;
 import com.movieplan.repository.theaterRepository;
 import com.movieplan.repository.UserRepository;
 
@@ -22,14 +21,14 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 
 	private final BookingHistoryRepository bookingHistoryRepository;
 	private final UserRepository userRepository;
-	private final movieRepository movieRepository;
+	private final MovieRepository movieRepository;
 	private final theaterRepository theaterRepository;
 	private final CheckoutRepository checkoutRepository;
 
 	@Autowired
 	public BookingHistoryServiceImpl(BookingHistoryRepository bookingHistoryRepository, UserRepository userRepository,
-			movieRepository movieRepository, theaterRepository theaterRepository,
-			CheckoutRepository checkoutRepository) {
+									 MovieRepository movieRepository, theaterRepository theaterRepository,
+									 CheckoutRepository checkoutRepository) {
 		this.bookingHistoryRepository = bookingHistoryRepository;
 		this.userRepository = userRepository;
 		this.movieRepository = movieRepository;
@@ -44,15 +43,14 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 
 	@Override
 	public BookingHistoryDTO createBookingHistory(BookingHistoryDTO bookingHistoryDTO) {
-		BookingHistory bookingHistory = convertToBookingHistory(bookingHistoryDTO);
-		BookingHistory createdBookingHistory = bookingHistoryRepository.save(bookingHistory);
+		com.movieplan.model.BookingHistory bookingHistory = convertToBookingHistory(bookingHistoryDTO);
+		com.movieplan.model.BookingHistory createdBookingHistory = bookingHistoryRepository.save(bookingHistory);
 		return convertToBookingHistoryDTO(createdBookingHistory);
 	}
 
-	private BookingHistory convertToBookingHistory(BookingHistoryDTO dto) {
-		BookingHistory bookingHistory = new BookingHistory();
+	private com.movieplan.model.BookingHistory convertToBookingHistory(BookingHistoryDTO dto) {
+		com.movieplan.model.BookingHistory bookingHistory = new com.movieplan.model.BookingHistory();
 
-		// Perform the conversion from DTO to entity fields
 		bookingHistory.setUser(userRepository.findByEmail(dto.getUser()));
 		Movie movie = movieRepository.findByName(dto.getMovie());
 
@@ -79,10 +77,9 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 		return bookingHistory;
 	}
 
-	private BookingHistoryDTO convertToBookingHistoryDTO(BookingHistory bookingHistory) {
+	private BookingHistoryDTO convertToBookingHistoryDTO(com.movieplan.model.BookingHistory bookingHistory) {
 		BookingHistoryDTO dto = new BookingHistoryDTO();
 
-		// Perform the conversion from entity to DTO fields
 		dto.setUser(bookingHistory.getUser().getEmail());
 		dto.setMovie(bookingHistory.getMovie().getName());
 		dto.setTheater(bookingHistory.getTheater().getTheatreName());

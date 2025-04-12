@@ -18,7 +18,7 @@ import com.movieplan.controller.BookingHistoryController;
 import com.movieplan.dto.BookingHistoryDTO;
 import com.movieplan.service.BookingHistoryService;
 
-public class BookingHistoryControllerTest {
+public class BookingHistoryDTOControllerTest {
 
 	@InjectMocks
 	private BookingHistoryController bookingHistoryController;
@@ -33,14 +33,14 @@ public class BookingHistoryControllerTest {
 
 	@Test
 	public void testGetAllBookingHistory() {
-		List<BookingHistoryDTO> bookingHistoryList = new ArrayList<>();
+		List<BookingHistoryDTO> bookingHistoryDTOList = new ArrayList<>();
 		// Add test data to the bookingHistoryList
 
-		when(bookingHistoryService.getAllBookingHistory()).thenReturn(bookingHistoryList);
+		when(bookingHistoryService.getAllBookingHistory()).thenReturn(bookingHistoryDTOList);
 
 		List<BookingHistoryDTO> result = bookingHistoryController.getAllBookingHistory();
 
-		assertEquals(bookingHistoryList, result);
+		assertEquals(bookingHistoryDTOList, result);
 	}
 
 	@Test
@@ -48,10 +48,10 @@ public class BookingHistoryControllerTest {
 		BookingHistoryDTO bookingHistoryDTO = new BookingHistoryDTO();
 		// Set test data in bookingHistoryDTO
 
-		BookingHistoryDTO createdBookingHistory = new BookingHistoryDTO();
+		BookingHistoryDTO createdBookingHistoryDTO = new BookingHistoryDTO();
 		// Set test data in createdBookingHistory
 
-		when(bookingHistoryService.createBookingHistory(bookingHistoryDTO)).thenReturn(createdBookingHistory);
+		when(bookingHistoryService.createBookingHistory(bookingHistoryDTO)).thenReturn(createdBookingHistoryDTO);
 
 		ResponseEntity<String> response = bookingHistoryController.createBookingHistory(bookingHistoryDTO);
 

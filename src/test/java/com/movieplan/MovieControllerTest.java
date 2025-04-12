@@ -3,96 +3,104 @@ package com.movieplan;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Map;
-
+import com.movieplan.controller.MovieController;
+import com.movieplan.model.Movie;
+import com.movieplan.service.MovieService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.movieplan.controller.MovieController;
-import com.movieplan.model.Movie;
-import com.movieplan.repository.movieRepository;
+import java.util.*;
 
 class MovieControllerTest {
 
     private MovieController movieController;
-    private movieRepository mRepo;
+    private MovieService movieService;
 
     @BeforeEach
     void setUp() {
-        mRepo = mock(movieRepository.class);
+        movieService = mock(MovieService.class);
         movieController = new MovieController();
-        injectMockRepository(movieController, mRepo);
-    }
-
-    @Test
-    void testGetMovie() {
-        long movieId = 1;
-        Movie movie = new Movie();
-        movie.setId(movieId);
-
-        when(mRepo.findById(movieId)).thenReturn(Optional.of(movie));
-
-        Optional<Movie> result = movieController.getMovie(movieId);
-
-        assertTrue(result.isPresent());
-        assertEquals(movieId, result.get().getId());
+        injectMockService(movieController, movieService);
     }
 
     @Test
     void testGetAllMovies() {
-        List<Movie> movies = new ArrayList<>();
-        movies.add(new Movie());
-        movies.add(new Movie());
+        List<Movie> movies = List.of(new Movie(), new Movie());
 
-        when(mRepo.findAll()).thenReturn(movies);
+        when(movieService.getAllMovies()).thenReturn(movies);
 
-        List<Movie> result = movieController.getAllMovies();
+        ResponseEntity<List<Movie>> response = movieController.getAllMovies();
 
-        assertEquals(2, result.size());
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).size());
     }
 
     @Test
-    void testAdd() {
+    void testGetMovieById() {
+        long movieId = 1;
+        Movie movie = new Movie();
+        movie.setId(movieId);
+
+        when(movieService.getMovieById(movieId)).thenReturn(movie);
+
+        ResponseEntity<Movie> response = movieController.getMovieById(movieId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(movieId, response.getBody().getId());
+    }
+
+    @Test
+    void testAddMovie() {
         Movie movieToAdd = new Movie();
-        movieToAdd.setId(0);
+        movieToAdd.setName("New Movie");
 
-        when(mRepo.save(movieToAdd)).thenReturn(movieToAdd);
+        when(movieService.addMovie(movieToAdd)).thenReturn(movieToAdd);
 
-        Movie result = movieController.add(movieToAdd);
+        ResponseEntity<Movie> response = movieController.addMovie(movieToAdd);
 
-        assertEquals(0, result.getId());
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("New Movie", response.getBody().getName());
     }
 
     @Test
-    void testDelete() {
+    void testUpdateMovie() {
+        long movieId = 1;
+        Movie updatedMovie = new Movie();
+        updatedMovie.setId(movieId);
+        updatedMovie.setName("Updated");
+
+        when(movieService.updateMovie(movieId, updatedMovie)).thenReturn(updatedMovie);
+
+        ResponseEntity<Movie> response = movieController.updateMovie(movieId, updatedMovie);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Updated", response.getBody().getName());
+    }
+
+    @Test
+    void testDeleteMovie() {
         long movieId = 1;
 
-        ResponseEntity<Map<String, Object>> expectedResponse = ResponseEntity.status(HttpStatus.OK)
-                .body(Collections.singletonMap("text", "Deleted Movie ID: " + movieId));
+        // Since deleteMovie returns void, just verify it's called
+        doNothing().when(movieService).deleteMovie(movieId);
 
-        ResponseEntity<Map<String, Object>> response = movieController.delete(movieId);
+        ResponseEntity<Void> response = movieController.deleteMovie(movieId);
 
-        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
-        assertEquals(expectedResponse.getBody(), response.getBody());
+        verify(movieService).deleteMovie(movieId);
+        assertEquals(204, response.getStatusCodeValue());
     }
 
-
-    // Method to inject the mock repository using reflection
-    private void injectMockRepository(MovieController controller, movieRepository repository) {
+    // Inject mock MovieService via reflection
+    private void injectMockService(MovieController controller, MovieService service) {
         try {
-            Field field = controller.getClass().getDeclaredField("mRepo");
+            var field = controller.getClass().getDeclaredField("movieService");
             field.setAccessible(true);
-            field.set(controller, repository);
+            field.set(controller, service);
         } catch (Exception e) {
-            e.printStackTrace();
+            fail("Failed to inject mock MovieService", e);
         }
     }
 }

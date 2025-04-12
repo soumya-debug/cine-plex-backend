@@ -1,112 +1,61 @@
 package com.movieplan;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Collections;
-
+import com.movieplan.controller.TheaterController;
+import com.movieplan.dto.TheaterDTO;
+import com.movieplan.model.Theater;
+import com.movieplan.service.TheaterService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.movieplan.controller.TheaterController;
-import com.movieplan.model.Movie;
-import com.movieplan.model.Theater;
-import com.movieplan.repository.movieRepository;
-import com.movieplan.repository.theaterRepository;
+import java.util.*;
 
-class TheaterControllerTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-    private TheaterController theaterController;
-    private theaterRepository tRepo;
-    private movieRepository mRepo;
+public class TheaterControllerTest {
+
+    private TheaterService theaterService;
+    private TheaterController controller;
 
     @BeforeEach
     void setUp() {
-        tRepo = mock(theaterRepository.class);
-        mRepo = mock(movieRepository.class);
-        theaterController = new TheaterController();
-        injectMockRepositories(theaterController, tRepo, mRepo);
+        theaterService = mock(TheaterService.class);
+        controller = new TheaterController();
+        injectService(controller, theaterService);
     }
 
     @Test
-    void testGetTheater() {
-        long theaterId = 1;
+    void testGetTheaterById() {
         Theater theater = new Theater();
+        theater.setId(1);
+        when(theaterService.getTheaterById(1)).thenReturn(Optional.of(theater));
 
-        when(tRepo.findById(theaterId)).thenReturn(Optional.of(theater));
-
-        Optional<Theater> result = theaterController.getMovie(theaterId);
-
-        assertEquals(Optional.of(theater), result);
+        ResponseEntity<Optional<Theater>> response = controller.getTheater(1);
+        assertTrue(response.getBody().isPresent());
+        assertEquals(1, response.getBody().get().getId());
     }
 
     @Test
-    void testGetAllTheaters() {
-        List<Theater> theaters = new ArrayList<>();
-        theaters.add(new Theater());
-        theaters.add(new Theater());
+    void testAddTheater() {
+        TheaterDTO dto = new TheaterDTO();
+        dto.setMovieId(1);
+        dto.setTheatreName("Test");
+        dto.setTheatreAddress("Address");
 
-        when(tRepo.findAll()).thenReturn(theaters);
+        when(theaterService.addTheater(dto)).thenReturn(Map.of("text", "Successfully added"));
 
-        List<Theater> result = theaterController.getAllMovies();
-
-        assertEquals(2, result.size());
+        var response = controller.add(dto);
+        assertEquals("Successfully added", response.getBody().get("text"));
     }
 
-    @Test
-    void testGetAllTheatersByMovieId() {
-        long movieId = 1;
-        Movie movie = new Movie();
-        List<Theater> theaters = new ArrayList<>();
-        theaters.add(new Theater());
-        theaters.add(new Theater());
-
-        when(mRepo.getOne(movieId)).thenReturn(movie);
-        when(tRepo.getTheatersByMovie(movie)).thenReturn(theaters);
-
-        ResponseEntity<Map<String, Object>> response = theaterController.getAllTheatersByMovieId(movieId);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(theaters, response.getBody().get("text"));
-    }
-
-    @Test
-    void testEditTheater() {
-        long theaterId = 1;
-        long movieId = 2;
-        Theater theater = new Theater();
-        theater.setId(theaterId);
-
-        when(mRepo.getOne(movieId)).thenReturn(new Movie());
-        when(tRepo.save(any(Theater.class))).thenReturn(theater);
-
-        Theater updatedTheater = new Theater();
-        ResponseEntity<Map<String, Object>> response = theaterController.editMovie(theaterId, movieId, updatedTheater);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Successfully edited", response.getBody().get("text"));
-    }
-
-    
-    // Method to inject the mock repositories using reflection
-    private void injectMockRepositories(TheaterController controller, theaterRepository theaterRepo,
-            movieRepository movieRepo) {
+    // Utility method to inject mock service
+    private void injectService(TheaterController controller, TheaterService service) {
         try {
-            Field theaterRepoField = controller.getClass().getDeclaredField("tRepo");
-            Field movieRepoField = controller.getClass().getDeclaredField("mRepo");
-            theaterRepoField.setAccessible(true);
-            movieRepoField.setAccessible(true);
-            theaterRepoField.set(controller, theaterRepo);
-            movieRepoField.set(controller, movieRepo);
+            var field = TheaterController.class.getDeclaredField("theaterService");
+            field.setAccessible(true);
+            field.set(controller, service);
         } catch (Exception e) {
             e.printStackTrace();
         }

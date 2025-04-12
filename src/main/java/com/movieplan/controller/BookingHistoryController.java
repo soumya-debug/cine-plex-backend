@@ -35,9 +35,9 @@ public class BookingHistoryController {
 
 	@PostMapping("/create")
 	public ResponseEntity<String> createBookingHistory(@RequestBody BookingHistoryDTO bookingHistoryDTO) {
-		BookingHistoryDTO createdBookingHistory = bookingHistoryService.createBookingHistory(bookingHistoryDTO);
+		BookingHistoryDTO createdBookingHistoryDTO = bookingHistoryService.createBookingHistory(bookingHistoryDTO);
 
-		if (createdBookingHistory != null) {
+		if (createdBookingHistoryDTO != null) {
 			return new ResponseEntity<>("Booking history created successfully", HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>("Failed to create booking history", HttpStatus.INTERNAL_SERVER_ERROR);
