@@ -1,26 +1,45 @@
 package com.movieplan.controller;
 
+import com.movieplan.config.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.movieplan.model.LoginRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "admin@123";
+    @Value("${admin.username}")
+    private String adminUsername;
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping("/api/admin/login")
-    public ResponseEntity<Object> adminLogin(@RequestBody LoginRequest loginRequest) {
-        if (loginRequest.getUsername().equals(ADMIN_USERNAME) && loginRequest.getPassword().equals(ADMIN_PASSWORD)) {
-            return ResponseEntity.ok().body("{\"result\": \"success\"}");
+    @Value("${admin.password}")
+    private String adminPassword;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> adminLogin(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        Map<String, String> response = new HashMap<>();
+        if (adminUsername.equals(username) && adminPassword.equals(password)) {
+            String token = jwtUtil.generateToken(username);
+            response.put("token", token);
+            response.put("result", "success");
+            response.put("message", "Welcome admin!");
         } else {
-            return ResponseEntity.ok().body("{\"result\": \"failure\"}");
+            response.put("result", "failure");
+            response.put("message", "Invalid credentials");
         }
+
+        return ResponseEntity.ok(response);
     }
+
 }

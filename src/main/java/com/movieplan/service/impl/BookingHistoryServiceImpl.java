@@ -15,19 +15,19 @@ import com.movieplan.repository.BookingHistoryRepository;
 import com.movieplan.repository.CheckoutRepository;
 import com.movieplan.repository.movieRepository;
 import com.movieplan.repository.theaterRepository;
-import com.movieplan.repository.userRepository;
+import com.movieplan.repository.UserRepository;
 
 @Service
 public class BookingHistoryServiceImpl implements BookingHistoryService {
 
 	private final BookingHistoryRepository bookingHistoryRepository;
-	private final userRepository userRepository;
+	private final UserRepository userRepository;
 	private final movieRepository movieRepository;
 	private final theaterRepository theaterRepository;
 	private final CheckoutRepository checkoutRepository;
 
 	@Autowired
-	public BookingHistoryServiceImpl(BookingHistoryRepository bookingHistoryRepository, userRepository userRepository,
+	public BookingHistoryServiceImpl(BookingHistoryRepository bookingHistoryRepository, UserRepository userRepository,
 			movieRepository movieRepository, theaterRepository theaterRepository,
 			CheckoutRepository checkoutRepository) {
 		this.bookingHistoryRepository = bookingHistoryRepository;
