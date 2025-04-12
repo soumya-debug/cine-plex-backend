@@ -1,54 +1,53 @@
 package com.movieplan;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.movieplan.controller.showController;
+import com.movieplan.dto.MovieShowDTO;
+import com.movieplan.model.Movie;
+import com.movieplan.service.MovieShowService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.movieplan.controller.showController;
-import com.movieplan.model.MovieShow;
-import com.movieplan.repository.showRepository;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-class showControllerTest {
+class ShowControllerTest {
 
     private showController showController;
-    private showRepository sRepo;
+    private MovieShowService movieShowService;
 
     @BeforeEach
     void setUp() {
-        sRepo = mock(showRepository.class);
-        showController = new showController(sRepo);
+        movieShowService = mock(MovieShowService.class);
+        showController = new showController(movieShowService);
     }
 
     @Test
-    void testGetShowById() {
-        long showId = 1;
-        MovieShow show = new MovieShow();
-        // Set properties of the show as needed using constructor or setter methods
-        // For example:
-        // show.setName("Example Show");
+    void testGetShowById_Found() {
+        long showId = 1L;
+        MovieShowDTO mockDTO = new MovieShowDTO(showId, "ACTIVE");
 
-        when(sRepo.findById(showId)).thenReturn(Optional.of(show));
+        when(movieShowService.getShowById(showId)).thenReturn(mockDTO);
 
-        ResponseEntity<MovieShow> response = showController.getShow(showId);
+        ResponseEntity<MovieShowDTO> response = showController.getShow(showId);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(show, response.getBody());
+        assertEquals(mockDTO, response.getBody());
     }
 
     @Test
-    void testGetShowByIdNotFound() {
-        long showId = 1;
+    void testGetShowById_NotFound() {
+        long showId = 1L;
 
-        when(sRepo.findById(showId)).thenReturn(Optional.empty());
+        when(movieShowService.getShowById(showId)).thenReturn(null);
 
-        ResponseEntity<MovieShow> response = showController.getShow(showId);
+        ResponseEntity<MovieShowDTO> response = showController.getShow(showId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
@@ -56,14 +55,28 @@ class showControllerTest {
 
     @Test
     void testGetAllShows() {
-        List<MovieShow> shows = new ArrayList<>();
-        shows.add(new MovieShow());
-        shows.add(new MovieShow());
+        List<MovieShowDTO> mockList = Arrays.asList(
+                new MovieShowDTO(1L, "ACTIVE"),
+                new MovieShowDTO(2L, "INACTIVE")
+        );
 
-        when(sRepo.findAll()).thenReturn(shows);
+        when(movieShowService.getAllShows()).thenReturn(mockList);
 
-        List<MovieShow> result = showController.getAllShows();
+        ResponseEntity<List<MovieShowDTO>> response = showController.getAllShows();
 
-        assertEquals(2, result.size());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    void testGetAllActiveMovies() {
+        List<Movie> movies = Collections.singletonList(new Movie());
+
+        when(movieShowService.getAllActiveMovies()).thenReturn(movies);
+
+        ResponseEntity<List<Movie>> response = showController.getAllActiveMovies();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
     }
 }

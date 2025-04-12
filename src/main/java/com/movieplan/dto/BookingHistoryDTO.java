@@ -6,11 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-@Entity // This class should be treated as a JPA entity
+@Entity
 public class BookingHistoryDTO {
 
-	@Id // Specifies the primary key of the entity
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // Specifies the strategy for generating primary keys
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "user_email")
@@ -33,7 +33,7 @@ public class BookingHistoryDTO {
 	}
 
 	public BookingHistoryDTO(String userEmail, String movieName, String theaterName, String cardHolderName,
-			String cardNumber) {
+							 String cardNumber) {
 		this.user = userEmail;
 		this.movie = movieName;
 		this.theater = theaterName;

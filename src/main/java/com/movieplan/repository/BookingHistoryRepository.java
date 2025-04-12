@@ -8,11 +8,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
 import com.movieplan.dto.BookingHistoryDTO;
-import com.movieplan.model.BookingHistory;
 
 @Repository
 @EnableJpaRepositories
-public interface BookingHistoryRepository extends JpaRepository<BookingHistory, Long> {
+public interface BookingHistoryRepository extends JpaRepository<com.movieplan.model.BookingHistory, Long> {
 
 	@Query("SELECT NEW com.movieplan.dto.BookingHistoryDTO(u.email, m.name, t.theatreName, ch.cardHolderName, ch.cardNumber) "
 			+ "FROM BookingHistory b " + "JOIN b.user u " + "JOIN b.movie m " + "JOIN b.theater t "

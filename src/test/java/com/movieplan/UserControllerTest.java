@@ -1,47 +1,37 @@
 package com.movieplan;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import com.movieplan.config.JwtUtil;
 import com.movieplan.controller.UserController;
+import com.movieplan.dto.UserLoginRequest;
 import com.movieplan.model.User;
-import com.movieplan.model.UserLogin;
-import com.movieplan.repository.UserRepository;
+import com.movieplan.service.UserService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class UserControllerTest {
 
     private UserController userController;
-    private UserRepository uRepo;
-    private JwtUtil jwtUtil;
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
-        uRepo = mock(UserRepository.class);
-        jwtUtil = mock(JwtUtil.class);
+        userService = mock(UserService.class);
         userController = new UserController();
-        injectDependencies(userController, uRepo, jwtUtil);
+        injectService(userController, userService);
     }
 
-    private void injectDependencies(UserController controller, UserRepository repo, JwtUtil jwtUtil) {
+    private void injectService(UserController controller, UserService service) {
         try {
-            Field repoField = UserController.class.getDeclaredField("userRepository");
-            repoField.setAccessible(true);
-            repoField.set(controller, repo);
-
-            Field jwtField = UserController.class.getDeclaredField("jwtUtil");
-            jwtField.setAccessible(true);
-            jwtField.set(controller, jwtUtil);
+            var field = UserController.class.getDeclaredField("userService");
+            field.setAccessible(true);
+            field.set(controller, service);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -49,40 +39,38 @@ class UserControllerTest {
 
     @Test
     void testAuthenticateSuccess() {
-        User user = new User();
-        user.setEmail("test@example.com");
-        user.setPassword("secret");
+        UserLoginRequest login = new UserLoginRequest("test@example.com", "secret");
+        User mockUser = new User();
+        mockUser.setEmail("test@example.com");
+        mockUser.setPassword("secret");
 
-        when(uRepo.findByEmail("test@example.com")).thenReturn(user);
-        when(jwtUtil.generateToken("test@example.com")).thenReturn("mockedToken");
+        Map<String, Object> mockResponse = Map.of(
+                "token", "mockedToken",
+                "user", mockUser
+        );
 
-        UserLogin login = new UserLogin();
-        login.setEmail("test@example.com");
-        login.setPassword("secret");
+        Mockito.<ResponseEntity<?>>when(userService.authenticate(login))
+                .thenReturn(ResponseEntity.ok(mockResponse));
 
         ResponseEntity<?> response = userController.authenticate(login);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(200, response.getStatusCodeValue());
         Map<String, Object> body = (Map<String, Object>) response.getBody();
-        assertNotNull(body.get("token"));
         assertEquals("mockedToken", body.get("token"));
-        assertEquals(user, body.get("user"));
+        assertEquals(mockUser, body.get("user"));
     }
 
-    // Other tests stay the same as your original versions...
 
-    // Just to show one unchanged:
     @Test
     void testAuthenticateEmailNotFound() {
-        when(uRepo.findByEmail("missing@example.com")).thenReturn(null);
+        UserLoginRequest login = new UserLoginRequest("missing@example.com", "any");
 
-        UserLogin login = new UserLogin();
-        login.setEmail("missing@example.com");
-        login.setPassword("any");
+        when(userService.authenticate(login))
+                .thenReturn(ResponseEntity.status(401).body(Map.of("error", "Email not found")));
 
         ResponseEntity<?> response = userController.authenticate(login);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(401, response.getStatusCodeValue());
         assertEquals("Email not found", ((Map<?, ?>) response.getBody()).get("error"));
     }
 }
