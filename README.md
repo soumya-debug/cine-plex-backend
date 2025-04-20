@@ -52,7 +52,7 @@ This project uses the following technologies:
 
 This project follows a modular structure for both frontend and backend. Below is an overview of the directories and files in the project.
 
-### Backend (Spring Boot)
+### Backend (Spring Boot) & Frontend (Angular)
 
 ```bash
 src/
