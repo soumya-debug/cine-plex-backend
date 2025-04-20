@@ -7,37 +7,22 @@ public class TheaterDTO {
     private String theatreAddress;
     private long movieId;
 
-    // Getters and Setters
-    public long getId() {
-        return id;
-    }
+    public TheaterDTO() {}
 
-    public void setId(long id) {
+    public TheaterDTO(long id, String theatreName, String theatreAddress, long movieId) {
         this.id = id;
-    }
-
-    public String getTheatreName() {
-        return theatreName;
-    }
-
-    public void setTheatreName(String theatreName) {
         this.theatreName = theatreName;
-    }
-
-    public String getTheatreAddress() {
-        return theatreAddress;
-    }
-
-    public void setTheatreAddress(String theatreAddress) {
         this.theatreAddress = theatreAddress;
-    }
-
-    public long getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(long movieId) {
         this.movieId = movieId;
     }
-}
 
+    // Getters and setters
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+    public String getTheatreName() { return theatreName; }
+    public void setTheatreName(String theatreName) { this.theatreName = theatreName; }
+    public String getTheatreAddress() { return theatreAddress; }
+    public void setTheatreAddress(String theatreAddress) { this.theatreAddress = theatreAddress; }
+    public long getMovieId() { return movieId; }
+    public void setMovieId(long movieId) { this.movieId = movieId; }
+}
