@@ -1,27 +1,16 @@
 package com.movieplan.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.movieplan.model.Movie;
 import com.movieplan.model.Theater;
-import com.movieplan.repository.movieRepository;
-import com.movieplan.repository.theaterRepository;
+import com.movieplan.dto.TheaterDTO;
+import com.movieplan.service.TheaterService;
 
 @RestController
 @CrossOrigin
@@ -29,87 +18,37 @@ import com.movieplan.repository.theaterRepository;
 public class TheaterController {
 
 	@Autowired
-	private theaterRepository tRepo;
-	
-	@Autowired
-	private movieRepository mRepo;
-	
-	@GetMapping("/{theaterId}")
-	public Optional<Theater> getMovie(@PathVariable long theaterId) {
-		
-		Optional<Theater> theTheater = tRepo.findById(theaterId);
+	private TheaterService theaterService;
 
-		return theTheater;
+	@GetMapping("/{theaterId}")
+	public ResponseEntity<Optional<Theater>> getTheater(@PathVariable long theaterId) {
+		return ResponseEntity.ok(theaterService.getTheaterById(theaterId));
 	}
-	
+
 	@GetMapping("/")
-	public List<Theater> getAllMovies() {
-		
-		List<Theater> theTheaters = tRepo.findAll();
-		
-		return theTheaters;
+	public ResponseEntity<List<Theater>> getAllTheaters() {
+		return ResponseEntity.ok(theaterService.getAllTheaters());
 	}
-	
+
 	@GetMapping("/bymovie/{movieId}")
 	public ResponseEntity<Map<String, Object>> getAllTheatersByMovieId(@PathVariable long movieId) {
-		
-		Movie movie = mRepo.getOne(movieId);
-		System.out.println(movie);
-		List<Theater> theTheaters = tRepo.getTheatersByMovie(movie);
-		System.out.println(theTheaters);
-		for(Theater theater:theTheaters){
-			System.out.println(theater);
-		}
-		Map<String,Object> map = new HashMap<>();
-		map.put("text",theTheaters);
-		return ResponseEntity.status(HttpStatus.OK)
-		        .body(map);
+		List<Theater> theaters = theaterService.getTheatersByMovieId(movieId);
+		return ResponseEntity.ok(Map.of("text", theaters));
 	}
-	
-	@PostMapping("/{movieId}")
-	public ResponseEntity<Map<String, Object>> add(@RequestBody Theater theTheater, @PathVariable long movieId) {
-		
-		theTheater.setId(0);
-		Movie movie = mRepo.getOne(movieId);
-		theTheater.setMovie(movie);
-		tRepo.save(theTheater);
-		Map<String,Object> map = new HashMap<>();
-		map.put("text","Successfully added");
-		return ResponseEntity.status(HttpStatus.OK)
-		        .body(map);
+
+	@PostMapping
+	public ResponseEntity<Map<String, Object>> add(@RequestBody TheaterDTO dto) {
+		// Create a Theater entity from DTO and pass movieId to service layer
+		return ResponseEntity.ok(theaterService.addTheater(dto));
 	}
-	
-	@PutMapping("/{theaterId}/{movieId}")
-	public ResponseEntity<Map<String, Object>> editMovie(@PathVariable long theaterId, 
-			@PathVariable long movieId,
-			@RequestBody Theater theTheater) {
-		
-		Theater theTheater1 = new Theater();
-		Movie movie = mRepo.getOne(movieId);
-		theTheater1.setTheatreName(theTheater.getTheatreName());
-		theTheater1.setTheatreAddress(theTheater.getTheatreAddress());
-		theTheater1.setMovie(movie);
-		theTheater1.setId(theaterId);
-		
-		Theater resTheter = tRepo.save(theTheater1);
-		
-		Map<String,Object> map = new HashMap<>();
-		map.put("text","Successfully edited");
-		return ResponseEntity.status(HttpStatus.OK)
-		        .body(map);
+
+	@PutMapping("/{theaterId}")
+	public ResponseEntity<Map<String, Object>> editMovie(@PathVariable long theaterId, @RequestBody TheaterDTO dto) {
+		return ResponseEntity.ok(theaterService.updateTheater(theaterId, dto));
 	}
-	
+
 	@DeleteMapping("/{theaterId}")
 	public ResponseEntity<Map<String, Object>> delete(@PathVariable long theaterId) {
-		
-		tRepo.deleteById(theaterId);
-		
-		Map<String,Object> map = new HashMap<>();
-		map.put("text","Deleted Theater Id"+ theaterId);
-
-		return ResponseEntity.status(HttpStatus.OK)
-		        .body(map);
-		
+		return ResponseEntity.ok(theaterService.deleteTheater(theaterId));
 	}
-
 }

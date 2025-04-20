@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.movieplan.model.Movie;
 
 // This interface extends JpaRepository to provide common CRUD operations for Movie entities.
-public interface movieRepository extends JpaRepository<Movie, Long> {
+public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     // Custom query using JPQL to retrieve movies associated with theaters
     @Query("SELECT distinct m FROM Movie m join Theater t on t.movie = m")

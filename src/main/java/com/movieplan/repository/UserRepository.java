@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.movieplan.model.User;
 
 @Repository
-public interface userRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
 	User findByEmail(String email);
 
