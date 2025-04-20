@@ -11,6 +11,10 @@ public class AdminLoginResponse {
         this.token = token;
     }
 
+    public AdminLoginResponse() {
+
+    }
+
     public String getToken() {
         return token;
     }
