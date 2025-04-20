@@ -18,21 +18,21 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 	private final UserRepository userRepository;
 	private final MovieRepository movieRepository;
 	private final theaterRepository theaterRepository;
-	private final CheckoutRepository checkoutRepository;
+	private final PaymentRepository paymentRepository;
 
 	@Autowired
 	public BookingHistoryServiceImpl(
-			BookingHistoryRepository bookingHistoryRepository,
-			UserRepository userRepository,
-			MovieRepository movieRepository,
-			theaterRepository theaterRepository,
-			CheckoutRepository checkoutRepository
-	) {
+            BookingHistoryRepository bookingHistoryRepository,
+            UserRepository userRepository,
+            MovieRepository movieRepository,
+            theaterRepository theaterRepository,
+            PaymentRepository paymentRepository
+    ) {
 		this.bookingHistoryRepository = bookingHistoryRepository;
 		this.userRepository = userRepository;
 		this.movieRepository = movieRepository;
 		this.theaterRepository = theaterRepository;
-		this.checkoutRepository = checkoutRepository;
+        this.paymentRepository = paymentRepository;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 				.orElseThrow(() -> new IllegalArgumentException("Theater not found with name: " + dto.getTheater()));
 		history.setTheater(theater);
 
-		PaymentModel checkout = checkoutRepository
+		PaymentModel checkout = paymentRepository
 				.findByCardHolderNameAndCardNumber(dto.getCardHolderName(), dto.getCardNumber())
 				.orElseThrow(() -> new IllegalArgumentException("Payment not found with given card details."));
 		history.setCheckout(checkout);
