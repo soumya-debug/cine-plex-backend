@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.movieplan.model.PaymentModel;
 
-public interface CheckoutRepository extends JpaRepository<PaymentModel, Long> {
-	// You can add custom query methods here if needed
+public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
 	Optional<PaymentModel> findByCardHolderNameAndCardNumber(String cardHolderName, String cardNumber);
 
 }

@@ -1,7 +1,7 @@
 package com.movieplan.service.impl;
 
 import com.movieplan.model.PaymentModel;
-import com.movieplan.repository.CheckoutRepository;
+import com.movieplan.repository.PaymentRepository;
 import com.movieplan.service.PaymentService;
 import org.springframework.stereotype.Service;
 
@@ -10,15 +10,15 @@ import java.util.List;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    private final CheckoutRepository checkoutRepository;
+    private final PaymentRepository paymentRepository;
 
-    public PaymentServiceImpl(CheckoutRepository checkoutRepository) {
-        this.checkoutRepository = checkoutRepository;
+    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
     public List<PaymentModel> getAllPayments() {
-        return checkoutRepository.findAll();
+        return paymentRepository.findAll();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
                 paymentDTO.getExpiryDate()
         );
 
-        return checkoutRepository.save(paymentModel);
+        return paymentRepository.save(paymentModel);
     }
 }
 
