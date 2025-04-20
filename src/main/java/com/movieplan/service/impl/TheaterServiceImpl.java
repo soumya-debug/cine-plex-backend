@@ -40,7 +40,7 @@ public class TheaterServiceImpl implements TheaterService {
     public Map<String, Object> addTheater(TheaterDTO dto) {
         Movie movie = mRepo.getOne(dto.getMovieId());
         Theater theater = new Theater();
-        theater.setId(0);
+        theater.setId(0);  // Setting the ID to 0 ensures Hibernate generates a new ID
         theater.setMovie(movie);
         theater.setTheatreName(dto.getTheatreName());
         theater.setTheatreAddress(dto.getTheatreAddress());
@@ -68,4 +68,3 @@ public class TheaterServiceImpl implements TheaterService {
         return Map.of("text", "Deleted Theater Id " + theaterId);
     }
 }
-
