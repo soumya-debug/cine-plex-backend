@@ -1,20 +1,15 @@
 package com.movieplan.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
-import com.movieplan.service.BookingHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.movieplan.dto.BookingHistoryDTO;
-import com.movieplan.model.PaymentModel;
-import com.movieplan.model.Movie;
-import com.movieplan.model.Theater;
-import com.movieplan.repository.BookingHistoryRepository;
-import com.movieplan.repository.CheckoutRepository;
-import com.movieplan.repository.MovieRepository;
-import com.movieplan.repository.theaterRepository;
-import com.movieplan.repository.UserRepository;
+import com.movieplan.model.*;
+import com.movieplan.repository.*;
+import com.movieplan.service.BookingHistoryService;
 
 @Service
 public class BookingHistoryServiceImpl implements BookingHistoryService {
@@ -26,9 +21,13 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 	private final CheckoutRepository checkoutRepository;
 
 	@Autowired
-	public BookingHistoryServiceImpl(BookingHistoryRepository bookingHistoryRepository, UserRepository userRepository,
-									 MovieRepository movieRepository, theaterRepository theaterRepository,
-									 CheckoutRepository checkoutRepository) {
+	public BookingHistoryServiceImpl(
+			BookingHistoryRepository bookingHistoryRepository,
+			UserRepository userRepository,
+			MovieRepository movieRepository,
+			theaterRepository theaterRepository,
+			CheckoutRepository checkoutRepository
+	) {
 		this.bookingHistoryRepository = bookingHistoryRepository;
 		this.userRepository = userRepository;
 		this.movieRepository = movieRepository;
@@ -42,50 +41,49 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 	}
 
 	@Override
-	public BookingHistoryDTO createBookingHistory(BookingHistoryDTO bookingHistoryDTO) {
-		com.movieplan.model.BookingHistory bookingHistory = convertToBookingHistory(bookingHistoryDTO);
-		com.movieplan.model.BookingHistory createdBookingHistory = bookingHistoryRepository.save(bookingHistory);
-		return convertToBookingHistoryDTO(createdBookingHistory);
+	public BookingHistoryDTO createBookingHistory(BookingHistoryDTO dto) {
+		if (dto.getUser() == null || dto.getUser().isEmpty()) {
+			throw new IllegalArgumentException("User email must not be null or empty");
+		}
+
+		BookingHistory bookingHistory = convertToBookingHistory(dto);
+		BookingHistory saved = bookingHistoryRepository.save(bookingHistory);
+		return convertToBookingHistoryDTO(saved);
 	}
 
-	private com.movieplan.model.BookingHistory convertToBookingHistory(BookingHistoryDTO dto) {
-		com.movieplan.model.BookingHistory bookingHistory = new com.movieplan.model.BookingHistory();
+	private BookingHistory convertToBookingHistory(BookingHistoryDTO dto) {
+		BookingHistory history = new BookingHistory();
 
-		bookingHistory.setUser(userRepository.findByEmail(dto.getUser()));
-		Movie movie = movieRepository.findByName(dto.getMovie());
+		User user = Optional.ofNullable(userRepository.findByEmail(dto.getUser()))
+				.orElseThrow(() -> new IllegalArgumentException("User not found with email: " + dto.getUser()));
+		history.setUser(user);
 
-		if (movie == null) {
-			throw new IllegalArgumentException("Movie not found with name: " + dto.getMovie());
-		}
+		Movie movie = Optional.ofNullable(movieRepository.findByName(dto.getMovie()))
+				.orElseThrow(() -> new IllegalArgumentException("Movie not found with name: " + dto.getMovie()));
+		history.setMovie(movie);
 
-		bookingHistory.setMovie(movie);
-
-		Theater theater = theaterRepository.findByTheatreName(dto.getTheater());
-
-		if (theater == null) {
-			throw new IllegalArgumentException("Theater not found with name: " + dto.getTheater());
-		}
-
-		bookingHistory.setTheater(theater);
+		Theater theater = Optional.ofNullable(theaterRepository.findByTheatreName(dto.getTheater()))
+				.orElseThrow(() -> new IllegalArgumentException("Theater not found with name: " + dto.getTheater()));
+		history.setTheater(theater);
 
 		PaymentModel checkout = checkoutRepository
 				.findByCardHolderNameAndCardNumber(dto.getCardHolderName(), dto.getCardNumber())
-				.orElseThrow(() -> new IllegalArgumentException("Checkout not found with card holder name: "
-						+ dto.getCardHolderName() + " and card number: " + dto.getCardNumber()));
-		bookingHistory.setCheckout(checkout);
+				.orElseThrow(() -> new IllegalArgumentException("Payment not found with given card details."));
+		history.setCheckout(checkout);
 
-		return bookingHistory;
+		return history;
 	}
 
-	private BookingHistoryDTO convertToBookingHistoryDTO(com.movieplan.model.BookingHistory bookingHistory) {
+	private BookingHistoryDTO convertToBookingHistoryDTO(BookingHistory history) {
 		BookingHistoryDTO dto = new BookingHistoryDTO();
 
-		dto.setUser(bookingHistory.getUser().getEmail());
-		dto.setMovie(bookingHistory.getMovie().getName());
-		dto.setTheater(bookingHistory.getTheater().getTheatreName());
-		dto.setId(bookingHistory.getCheckout().getId()); // Set checkout ID
+		dto.setId(history.getId());
+		dto.setUser(Optional.ofNullable(history.getUser()).map(User::getEmail).orElse("Unknown"));
+		dto.setMovie(Optional.ofNullable(history.getMovie()).map(Movie::getName).orElse("Unknown"));
+		dto.setTheater(Optional.ofNullable(history.getTheater()).map(Theater::getTheatreName).orElse("Unknown"));
+		dto.setCardHolderName(history.getCheckout() != null ? history.getCheckout().getCardHolderName() : "Unknown");
+		dto.setCardNumber(history.getCheckout() != null ? history.getCheckout().getCardNumber() : "****");
 
 		return dto;
-
 	}
 }

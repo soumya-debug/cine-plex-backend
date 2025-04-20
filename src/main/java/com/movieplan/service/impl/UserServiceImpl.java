@@ -26,22 +26,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> authenticate(UserLoginRequest request) {
+        // Fetch user based on email
         User user = userRepository.findByEmail(request.getEmail());
 
+        // Check if user exists
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Collections.singletonMap("error", "Email not found"));
         }
 
+        // Check if password matches
         if (!user.getPassword().equals(request.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Collections.singletonMap("error", "Incorrect password"));
         }
 
+        // Generate JWT token for the authenticated user
         String token = jwtUtil.generateToken(user.getEmail());
+
+        // Prepare the response, including the token and user details
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("user", user);
+
+        // Include only necessary user details (email and role) in the response
+        Map<String, String> userDetails = new HashMap<>();
+        userDetails.put("email", user.getEmail());
+        userDetails.put("role", user.getRole());  // Assuming you have a role field in your User model
+
+        response.put("user", userDetails);
+
+        // Return response with token and user details
         return ResponseEntity.ok(response);
     }
 
