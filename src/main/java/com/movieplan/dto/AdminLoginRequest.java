@@ -9,6 +9,10 @@ public class AdminLoginRequest {
         this.password = password;
     }
 
+    public AdminLoginRequest() {
+
+    }
+
     public String getUsername() {
         return username;
     }

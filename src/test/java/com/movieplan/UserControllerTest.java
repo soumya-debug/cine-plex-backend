@@ -65,7 +65,7 @@ class UserControllerTest {
     void testAuthenticateEmailNotFound() {
         UserLoginRequest login = new UserLoginRequest("missing@example.com", "any");
 
-        when(userService.authenticate(login))
+        Mockito.<ResponseEntity<?>>when(userService.authenticate(login))
                 .thenReturn(ResponseEntity.status(401).body(Map.of("error", "Email not found")));
 
         ResponseEntity<?> response = userController.authenticate(login);
