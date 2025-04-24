@@ -1,0 +1,5 @@
+# Ignore IntelliJ IDEA settings folder
+.idea/
+
+# Ignore Maven/Gradle build output folder
+target/
