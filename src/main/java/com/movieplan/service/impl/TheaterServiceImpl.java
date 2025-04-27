@@ -4,7 +4,7 @@ import com.movieplan.dto.TheaterDTO;
 import com.movieplan.model.Movie;
 import com.movieplan.model.Theater;
 import com.movieplan.repository.MovieRepository;
-import com.movieplan.repository.theaterRepository;
+import com.movieplan.repository.TheaterRepository;
 import com.movieplan.service.TheaterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,14 @@ import java.util.*;
 @Service
 public class TheaterServiceImpl implements TheaterService {
 
-    @Autowired
-    private theaterRepository tRepo;
+    private final TheaterRepository tRepo;
+    private final MovieRepository mRepo;
 
     @Autowired
-    private MovieRepository mRepo;
+    public TheaterServiceImpl(TheaterRepository tRepo, MovieRepository mRepo) {
+        this.tRepo = tRepo;
+        this.mRepo = mRepo;
+    }
 
     @Override
     public Optional<Theater> getTheaterById(long id) {
@@ -45,7 +48,6 @@ public class TheaterServiceImpl implements TheaterService {
         theater.setTheatreName(dto.getTheatreName());
         theater.setTheatreAddress(dto.getTheatreAddress());
         tRepo.save(theater);
-
         return Map.of("text", "Successfully added");
     }
 
@@ -58,7 +60,6 @@ public class TheaterServiceImpl implements TheaterService {
         theater.setTheatreAddress(dto.getTheatreAddress());
         theater.setMovie(movie);
         tRepo.save(theater);
-
         return Map.of("text", "Successfully edited");
     }
 

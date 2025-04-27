@@ -14,11 +14,15 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
+	private final UserService userService;
+
 	@Autowired
-	private UserService userService;
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping("/authenticate")
-	public ResponseEntity<?> authenticate(@RequestBody UserLoginRequest loginRequest) {
+	public ResponseEntity<Map<String, Object>> authenticate(@RequestBody UserLoginRequest loginRequest) {
 		return userService.authenticate(loginRequest);
 	}
 

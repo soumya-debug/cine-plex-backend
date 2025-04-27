@@ -21,7 +21,7 @@ class MovieControllerTest {
     @BeforeEach
     void setUp() {
         movieService = mock(MovieService.class);
-        movieController = new MovieController();
+        movieController = new MovieController(movieService);
         injectMockService(movieController, movieService);
     }
 
