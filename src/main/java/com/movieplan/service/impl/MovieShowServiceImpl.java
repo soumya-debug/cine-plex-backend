@@ -4,21 +4,20 @@ import com.movieplan.dto.MovieShowDTO;
 import com.movieplan.model.Movie;
 import com.movieplan.model.MovieShow;
 import com.movieplan.repository.MovieRepository;
-import com.movieplan.repository.showRepository;
+import com.movieplan.repository.ShowRepository;
 import com.movieplan.service.MovieShowService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class MovieShowServiceImpl implements MovieShowService {
 
-    private final showRepository sRepo;
+    private final ShowRepository sRepo;
     private final MovieRepository mRepo;
 
-    public MovieShowServiceImpl(showRepository sRepo, MovieRepository mRepo) {
+    public MovieShowServiceImpl(ShowRepository sRepo, MovieRepository mRepo) {
         this.sRepo = sRepo;
         this.mRepo = mRepo;
     }
@@ -34,7 +33,7 @@ public class MovieShowServiceImpl implements MovieShowService {
         List<MovieShow> shows = sRepo.findAll();
         return shows.stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -46,4 +45,3 @@ public class MovieShowServiceImpl implements MovieShowService {
         return new MovieShowDTO(show.getId(), show.getStatus());
     }
 }
-

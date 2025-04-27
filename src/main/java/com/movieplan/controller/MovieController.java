@@ -1,7 +1,6 @@
 package com.movieplan.controller;
 
 import com.movieplan.model.Movie;
-
 import com.movieplan.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class MovieController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
 
-    public MovieController() {
+    @Autowired
+    public MovieController(MovieService movieService) {
         this.movieService = movieService;
     }
 
