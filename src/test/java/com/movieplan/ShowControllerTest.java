@@ -3,7 +3,7 @@ package com.movieplan;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.movieplan.controller.showController;
+import com.movieplan.controller.ShowController;
 import com.movieplan.dto.MovieShowDTO;
 import com.movieplan.model.Movie;
 import com.movieplan.service.MovieShowService;
@@ -19,13 +19,13 @@ import java.util.List;
 
 class ShowControllerTest {
 
-    private showController showController;
+    private ShowController showController;
     private MovieShowService movieShowService;
 
     @BeforeEach
     void setUp() {
         movieShowService = mock(MovieShowService.class);
-        showController = new showController(movieShowService);
+        showController = new ShowController(movieShowService);
     }
 
     @Test

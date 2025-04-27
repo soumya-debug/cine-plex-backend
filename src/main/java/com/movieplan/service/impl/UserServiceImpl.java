@@ -1,5 +1,6 @@
 package com.movieplan.service.impl;
 
+import com.movieplan.constants.MovieConstants;
 import com.movieplan.dto.UserLoginRequest;
 import com.movieplan.model.User;
 import com.movieplan.repository.UserRepository;
@@ -18,27 +19,30 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    public UserServiceImpl(UserRepository userRepository, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
-    public ResponseEntity<?> authenticate(UserLoginRequest request) {
+    public ResponseEntity<Map<String, Object>> authenticate(UserLoginRequest request) {
         // Fetch user based on email
         User user = userRepository.findByEmail(request.getEmail());
 
         // Check if user exists
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Collections.singletonMap("error", "Email not found"));
+                    .body(Collections.singletonMap(MovieConstants.ERROR_KEY, "Email not found"));
         }
 
         // Check if password matches
         if (!user.getPassword().equals(request.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Collections.singletonMap("error", "Incorrect password"));
+                    .body(Collections.singletonMap(MovieConstants.ERROR_KEY, "Incorrect password"));
         }
 
         // Generate JWT token for the authenticated user
@@ -75,7 +79,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<Map<String, String>> updatePassword(Long userId, String newPassword) {
         if (newPassword == null || newPassword.trim().isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body(Collections.singletonMap("error", "New password is missing"));
+                    .body(Collections.singletonMap(MovieConstants.ERROR_KEY, "New password is missing"));
         }
 
         Optional<User> optionalUser = userRepository.findById(userId);

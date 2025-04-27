@@ -1,18 +1,11 @@
 package com.movieplan.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "booking_history")
 public class BookingHistory {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,13 +26,21 @@ public class BookingHistory {
 	@JoinColumn(name = "checkout_id")
 	private PaymentModel checkout;
 
-	// Constructors, getters, setters...
-
+	// No-arg constructor
 	public BookingHistory() {
-		super();
-		// TODO Auto-generated constructor stub
+		// No-argument constructor required by JPA
 	}
 
+	// All-args constructor
+	public BookingHistory(Long id, User user, Movie movie, Theater theater, PaymentModel checkout) {
+		this.id = id;
+		this.user = user;
+		this.movie = movie;
+		this.theater = theater;
+		this.checkout = checkout;
+	}
+
+	// Getters and Setters
 	public Long getId() {
 		return id;
 	}
@@ -79,6 +80,4 @@ public class BookingHistory {
 	public void setCheckout(PaymentModel checkout) {
 		this.checkout = checkout;
 	}
-
-	// Constructors, getters, and setters...
 }
