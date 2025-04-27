@@ -1,23 +1,23 @@
 package com.movieplan.model;
 
 public class LoginRequest {
+
     private String username;
     private String password;
 
-    // Constructors, getters, and setters (You can generate these using your IDE)
+    // No-arg constructor (required for frameworks like Spring and Jackson)
+    public LoginRequest() {
+        // Default constructor
+    }
 
-    // Example constructor:
+    // All-args constructor
     public LoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public LoginRequest() {
-		
-		// TODO Auto-generated constructor stub
-	}
-
-	public String getUsername() {
+    // Getters and Setters
+    public String getUsername() {
         return username;
     }
 
@@ -33,10 +33,9 @@ public class LoginRequest {
         this.password = password;
     }
 
-    // Override toString() to handle null values gracefully
+    // toString() method
     @Override
     public String toString() {
         return "LoginRequest [username=" + (username != null ? username : "null") + ", password=" + password + "]";
     }
-    
 }

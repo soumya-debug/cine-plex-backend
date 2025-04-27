@@ -4,7 +4,6 @@ import com.movieplan.controller.AdminController;
 import com.movieplan.dto.AdminLoginRequest;
 import com.movieplan.dto.AdminLoginResponse;
 import com.movieplan.service.AdminService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-public class AdminControllerTest {
+class AdminControllerTest {
 
     @InjectMocks
     private AdminController adminController;
@@ -34,7 +33,6 @@ public class AdminControllerTest {
         AdminLoginRequest loginRequest = new AdminLoginRequest();
         loginRequest.setUsername("admin");
         loginRequest.setPassword("admin123");
-
         AdminLoginResponse expectedResponse = new AdminLoginResponse();
         expectedResponse.setToken("mocked-jwt-token");
 

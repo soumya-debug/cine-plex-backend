@@ -15,20 +15,20 @@ import com.movieplan.controller.SeatsBookingController;
 import com.movieplan.model.BookSeatsRequest;
 import com.movieplan.model.BookedSeats;
 import com.movieplan.model.Theater;
-import com.movieplan.repository.bookedSeatsRepository;
-import com.movieplan.repository.theaterRepository;
+import com.movieplan.repository.BookedSeatsRepository;
+import com.movieplan.repository.TheaterRepository;
 
 class BookedSeatsControllerTest {
 
     private SeatsBookingController bookedSeatsController;
-    private bookedSeatsRepository bsRepo;
-    private theaterRepository tRepo;
+    private BookedSeatsRepository bsRepo;
+    private TheaterRepository tRepo;
 
     @BeforeEach
     void setUp() {
-        bsRepo = mock(bookedSeatsRepository.class);
-        tRepo = mock(theaterRepository.class);
-        bookedSeatsController = new SeatsBookingController();
+        bsRepo = mock(BookedSeatsRepository.class);
+        tRepo = mock(TheaterRepository.class);
+        bookedSeatsController = new SeatsBookingController(bsRepo, tRepo);
         injectMockRepositories(bookedSeatsController, bsRepo, tRepo);
     }
 
@@ -55,8 +55,8 @@ class BookedSeatsControllerTest {
     }
 
     // Method to inject the mock repositories using reflection
-    private void injectMockRepositories(SeatsBookingController controller, bookedSeatsRepository bsRepo,
-            theaterRepository tRepo) {
+    private void injectMockRepositories(SeatsBookingController controller, BookedSeatsRepository bsRepo,
+            TheaterRepository tRepo) {
         try {
             Field bsRepoField = controller.getClass().getDeclaredField("bsRepo");
             Field tRepoField = controller.getClass().getDeclaredField("tRepo");

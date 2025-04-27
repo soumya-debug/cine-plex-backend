@@ -23,7 +23,7 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
-        userController = new UserController();
+        userController = new UserController(userService);
         injectService(userController, userService);
     }
 

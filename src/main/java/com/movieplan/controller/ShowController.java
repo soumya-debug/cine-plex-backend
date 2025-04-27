@@ -13,16 +13,14 @@ import com.movieplan.model.Movie;
 import com.movieplan.dto.MovieShowDTO;
 import com.movieplan.service.MovieShowService;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/movieshow")
 @CrossOrigin(origins = "http://localhost:4200")
-public class showController {
+public class ShowController {
 
 	private final MovieShowService movieShowService;
 
-	public showController(MovieShowService movieShowService) {
+	public ShowController(MovieShowService movieShowService) {
 		this.movieShowService = movieShowService;
 	}
 

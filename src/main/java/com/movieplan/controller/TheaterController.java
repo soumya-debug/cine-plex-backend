@@ -17,8 +17,12 @@ import com.movieplan.service.TheaterService;
 @RequestMapping("/theater")
 public class TheaterController {
 
+	private final TheaterService theaterService;
+
 	@Autowired
-	private TheaterService theaterService;
+	public TheaterController(TheaterService theaterService) {
+		this.theaterService = theaterService;
+	}
 
 	@GetMapping("/{theaterId}")
 	public ResponseEntity<Optional<Theater>> getTheater(@PathVariable long theaterId) {

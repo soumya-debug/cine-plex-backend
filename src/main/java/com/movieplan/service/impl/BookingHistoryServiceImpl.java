@@ -3,6 +3,7 @@ package com.movieplan.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.movieplan.constants.MovieConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,22 +18,22 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 	private final BookingHistoryRepository bookingHistoryRepository;
 	private final UserRepository userRepository;
 	private final MovieRepository movieRepository;
-	private final theaterRepository theaterRepository;
+	private final TheaterRepository theaterRepository;
 	private final PaymentRepository paymentRepository;
 
 	@Autowired
 	public BookingHistoryServiceImpl(
-            BookingHistoryRepository bookingHistoryRepository,
-            UserRepository userRepository,
-            MovieRepository movieRepository,
-            theaterRepository theaterRepository,
-            PaymentRepository paymentRepository
-    ) {
+			BookingHistoryRepository bookingHistoryRepository,
+			UserRepository userRepository,
+			MovieRepository movieRepository,
+			TheaterRepository theaterRepository,
+			PaymentRepository paymentRepository
+	) {
 		this.bookingHistoryRepository = bookingHistoryRepository;
 		this.userRepository = userRepository;
 		this.movieRepository = movieRepository;
 		this.theaterRepository = theaterRepository;
-        this.paymentRepository = paymentRepository;
+		this.paymentRepository = paymentRepository;
 	}
 
 	@Override
@@ -45,7 +46,6 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 		if (dto.getUser() == null || dto.getUser().isEmpty()) {
 			throw new IllegalArgumentException("User email must not be null or empty");
 		}
-
 		BookingHistory bookingHistory = convertToBookingHistory(dto);
 		BookingHistory saved = bookingHistoryRepository.save(bookingHistory);
 		return convertToBookingHistoryDTO(saved);
@@ -78,11 +78,11 @@ public class BookingHistoryServiceImpl implements BookingHistoryService {
 		BookingHistoryDTO dto = new BookingHistoryDTO();
 
 		dto.setId(history.getId());
-		dto.setUser(Optional.ofNullable(history.getUser()).map(User::getEmail).orElse("Unknown"));
-		dto.setMovie(Optional.ofNullable(history.getMovie()).map(Movie::getName).orElse("Unknown"));
-		dto.setTheater(Optional.ofNullable(history.getTheater()).map(Theater::getTheatreName).orElse("Unknown"));
-		dto.setCardHolderName(history.getCheckout() != null ? history.getCheckout().getCardHolderName() : "Unknown");
-		dto.setCardNumber(history.getCheckout() != null ? history.getCheckout().getCardNumber() : "****");
+		dto.setUser(Optional.ofNullable(history.getUser()).map(User::getEmail).orElse(MovieConstants.UNKNOWN));
+		dto.setMovie(Optional.ofNullable(history.getMovie()).map(Movie::getName).orElse(MovieConstants.UNKNOWN));
+		dto.setTheater(Optional.ofNullable(history.getTheater()).map(Theater::getTheatreName).orElse(MovieConstants.UNKNOWN));
+		dto.setCardHolderName(history.getCheckout() != null ? history.getCheckout().getCardHolderName() : MovieConstants.UNKNOWN);
+		dto.setCardNumber(history.getCheckout() != null ? history.getCheckout().getCardNumber() : MovieConstants.MASKED_CARD_NUMBER);
 
 		return dto;
 	}

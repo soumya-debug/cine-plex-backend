@@ -14,7 +14,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class TheaterControllerTest {
+class TheaterControllerTest {
 
     private TheaterService theaterService;
     private TheaterController controller;
@@ -22,7 +22,7 @@ public class TheaterControllerTest {
     @BeforeEach
     void setUp() {
         theaterService = mock(TheaterService.class);
-        controller = new TheaterController();
+        controller = new TheaterController(theaterService);
         injectService(controller, theaterService);
     }
 
