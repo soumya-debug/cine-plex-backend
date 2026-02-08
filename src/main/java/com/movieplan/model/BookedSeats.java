@@ -2,6 +2,8 @@ package com.movieplan.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,10 +13,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class BookedSeats {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
@@ -28,50 +35,6 @@ public class BookedSeats {
 
 	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.EAGER)
 	@JoinColumn(name = "theater")
+	@JsonBackReference
 	private Theater theater;
-
-	public BookedSeats() {
-		super();
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getSeat() {
-		return seat;
-	}
-
-	public void setSeat(String seat) {
-		this.seat = seat;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
-	}
-
-	public Theater getTheater() {
-		return theater;
-	}
-
-	public void setTheater(Theater theater) {
-		this.theater = theater;
-	}
-
 }

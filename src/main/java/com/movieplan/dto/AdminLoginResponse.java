@@ -1,5 +1,10 @@
 package com.movieplan.dto;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class AdminLoginResponse {
     private String token;
     private String result;
@@ -9,33 +14,5 @@ public class AdminLoginResponse {
         this.result = result;
         this.message = message;
         this.token = token;
-    }
-
-    public AdminLoginResponse() {
-
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }
