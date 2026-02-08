@@ -1,17 +1,18 @@
 package com.movieplan.dto;
 
 import com.movieplan.model.Movie;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class MovieDTO {
-
     private long id;
     private String name;
     private String duration;
     private String language;
     private String genre;
     private String banner;
-
-    public MovieDTO() {}
 
     public MovieDTO(long id, String name, String duration, String language, String genre, String banner) {
         this.id = id;
@@ -34,18 +35,4 @@ public class MovieDTO {
     public static MovieDTO fromEntity(Movie movie) {
         return new MovieDTO(movie);
     }
-
-    // Getters and setters
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getDuration() { return duration; }
-    public void setDuration(String duration) { this.duration = duration; }
-    public String getLanguage() { return language; }
-    public void setLanguage(String language) { this.language = language; }
-    public String getGenre() { return genre; }
-    public void setGenre(String genre) { this.genre = genre; }
-    public String getBanner() { return banner; }
-    public void setBanner(String banner) { this.banner = banner; }
 }
