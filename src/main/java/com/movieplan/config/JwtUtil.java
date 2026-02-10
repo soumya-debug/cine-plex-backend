@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -20,14 +21,16 @@ public class JwtUtil {
 
     private Key signingKey;
 
+    private static final long EXPIRATION_MILLIS = 1000 * 60 * 15; // 15 minutes
+
     @PostConstruct
     public void init() {
         try {
             byte[] decodedKey = Base64.getDecoder().decode(base64Secret);
-            if (decodedKey.length < 32) {
-                throw new IllegalArgumentException("JWT secret must be at least 256 bits (32 bytes)");
+            if (decodedKey.length < 64) { // 512 bits for HS512
+                throw new IllegalArgumentException("JWT secret must be at least 512 bits (64 bytes) for HS512");
             }
-            this.signingKey = new SecretKeySpec(decodedKey, "HmacSHA256");
+            this.signingKey = new SecretKeySpec(decodedKey, "HmacSHA512");
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid JWT secret. Ensure it's a valid Base64-encoded string.", e);
         }
@@ -36,14 +39,17 @@ public class JwtUtil {
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
-                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MILLIS))
+                .signWith(signingKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public boolean validateToken(String token, String username) {
-        return extractUsername(token).equals(username) && !isTokenExpired(token);
+        Claims claims = extractAllClaims(token);
+        return claims.getSubject().equals(username)
+                && !isTokenExpired(token);
     }
 
     public String extractUsername(String token) {
